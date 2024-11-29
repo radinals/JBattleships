@@ -13,14 +13,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import com.battleship.board.Board;
-import com.battleship.board.BoardCellStatus;
 import com.battleship.game.Players;
 import com.battleship.gui.callback.ShotEvent;
 import com.battleship.gui.event.UiMode;
 import com.battleship.gui.widget.ActionButton;
 import com.battleship.gui.widget.guiboard.GUIBoard;
-import com.battleship.utils.BoardCoordinate;
 
 public class MainWindow extends JFrame {
 	private GUIBoard player_board, opponent_board;

@@ -1,6 +1,5 @@
 package com.battleship.game;
 
-import java.io.ObjectInputFilter.Status;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.random.RandomGenerator;
@@ -8,8 +7,6 @@ import java.util.random.RandomGenerator;
 import javax.swing.SwingUtilities;
 
 import com.battleship.board.BoardCellStatus;
-import com.battleship.exception.InvalidShipPlacement;
-import com.battleship.exception.OutOfBoundsCoordinate;
 import com.battleship.gui.MainWindow;
 import com.battleship.utils.BoardCoordinate;
 import com.battleship.utils.Direction;
