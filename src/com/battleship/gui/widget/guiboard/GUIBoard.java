@@ -28,11 +28,11 @@ import com.battleship.utils.Direction;
 public class GUIBoard extends JComponent implements MouseInputListener, MouseMotionListener {
 	private Board board;
 	private Point gui_board_start;
-	private Dimension gui_cell_size, gui_board_size, board_size;
+	private Dimension cellDimensions, boardDimension;
 
 	private int margin;
-	private Map.Entry<String, Integer> placement_current_ship_piece;
-	private Queue<Map.Entry<String, Integer>> placement_ship_piece_queue;
+	private Map.Entry<String, Integer> currentPlacementShip;
+	private Queue<Map.Entry<String, Integer>> shipPlacementQueue;
 	private Ship placement_tmp_ship;
 	private boolean polled_a_ship;
 	private ShotEvent onShotEvent;
@@ -44,7 +44,7 @@ public class GUIBoard extends JComponent implements MouseInputListener, MouseMot
 		this.addMouseMotionListener(this);
 		this.board = board;
 
-		this.placement_ship_piece_queue = new ArrayDeque<>();
+		this.shipPlacementQueue = new ArrayDeque<>();
 		
 		setDimensions();
 		
@@ -62,7 +62,7 @@ public class GUIBoard extends JComponent implements MouseInputListener, MouseMot
 		boardRenderer = new BoardRenderer(
 				GameConfig.get().borderColor,
 				GameConfig.get().cellColorHashMap,
-				gui_cell_size,GameConfig.get().borderSize,
+				cellDimensions,GameConfig.get().borderSize,
 				hideShips
 		);
 	}
@@ -72,17 +72,17 @@ public class GUIBoard extends JComponent implements MouseInputListener, MouseMot
 	}
 	
 	public void enqueShipPiece(Map.Entry<String, Integer> piece) {
-		placement_ship_piece_queue.add(piece);
+		shipPlacementQueue.add(piece);
 		System.out.println("ENQUIED " + piece.getKey());
 	}
 	
 	public boolean hasQueuedShipPlacement() {
-		return !placement_ship_piece_queue.isEmpty() && !polled_a_ship;
+		return !shipPlacementQueue.isEmpty() && !polled_a_ship;
 	}
 
 	public void loadNextShipInQueue() {
-		placement_current_ship_piece = placement_ship_piece_queue.poll();
-		polled_a_ship =  (placement_current_ship_piece != null); // no polled ships if queue is empty
+		currentPlacementShip = shipPlacementQueue.poll();
+		polled_a_ship =  (currentPlacementShip != null); // no polled ships if queue is empty
 	}
 	
 	private BoardCoordinate mousePointToGridCoordinate(Point point){
@@ -91,8 +91,8 @@ public class GUIBoard extends JComponent implements MouseInputListener, MouseMot
 			coord = GridOperations.getCoordOnGrid(
 					point,
 					gui_board_start,
-					gui_board_size,
-					gui_cell_size);
+					boardDimension,
+					cellDimensions);
 			return coord;
 		} catch (Exception e) {
 			return null;
@@ -102,7 +102,7 @@ public class GUIBoard extends JComponent implements MouseInputListener, MouseMot
 	private void onLeftMouseButtonClicked(BoardCoordinate coord) {
     	if(com.battleship.gui.event.UiMode.inPlacementMode()) {
     		try {
-				board.rotateShip(board.getShip(placement_current_ship_piece.getKey()));
+				board.rotateShip(board.getShip(currentPlacementShip.getKey()));
 				System.out.println(placement_tmp_ship);
 				revalidate();
 				repaint();
@@ -117,13 +117,13 @@ public class GUIBoard extends JComponent implements MouseInputListener, MouseMot
 	private void placeShip(BoardCoordinate coord) {
 		try {
 			if (polled_a_ship) {
-				board.addShip(new Ship( placement_current_ship_piece.getKey(),
-										placement_current_ship_piece.getValue(),
+				board.addShip(new Ship( currentPlacementShip.getKey(),
+										currentPlacementShip.getValue(),
 										coord, Direction.South)
 				);
 				polled_a_ship = false;
 			} else {
-				board.moveShip(board.getShip(placement_current_ship_piece.getKey()), coord);
+				board.moveShip(board.getShip(currentPlacementShip.getKey()), coord);
 			}
 			repaint();
 		} catch (Exception e) {
@@ -153,35 +153,33 @@ public class GUIBoard extends JComponent implements MouseInputListener, MouseMot
 	private void setDimensions() {
 		this.margin = (int)(getWidth() * (30.0 / 100));
 
-		this.board_size = new Dimension(board.getBoardWidth(), board.getBoardHeight());
-
-		this.gui_cell_size = new Dimension(
-				(int)((getWidth() - margin) / ( board_size.getWidth())),
-				(int)((getWidth() - margin) / (board_size.getHeight()))
+		this.cellDimensions = new Dimension(
+				(int)((getWidth() - margin) / (board.getBoardWidth())),
+				(int)((getWidth() - margin) / (board.getBoardHeight()))
 		);
 
-		this.gui_board_size = new Dimension(
-				(int) (gui_cell_size.getWidth() * board_size.getWidth()),
-				(int) (gui_cell_size.getHeight() * board_size.getHeight())
+		this.boardDimension = new Dimension(
+				(int) (cellDimensions.getWidth() * board.getBoardWidth()),
+				(int) (cellDimensions.getHeight() * board.getBoardHeight())
 		);
 
 		this.gui_board_start = new Point(
-				(getWidth() / 2) - gui_board_size.width / 2,
-				(getHeight() / 2) - gui_board_size.height / 2);
+				(getWidth() / 2) - boardDimension.width / 2,
+				(getHeight() / 2) - boardDimension.height / 2);
 		
 	}
 
 	@Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        boardRenderer.renderBoard(board, gui_board_start, gui_cell_size, g);
+        boardRenderer.renderBoard(board, gui_board_start, cellDimensions, g);
     }
 
 	@Override
 	public Dimension getPreferredSize() {
 		return new Dimension(
-				gui_board_size.width + (margin * 2),
-				gui_board_size.height + (margin * 2)
+				boardDimension.width + (margin * 2),
+				boardDimension.height + (margin * 2)
 		);
 	}
 
