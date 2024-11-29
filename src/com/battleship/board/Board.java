@@ -58,7 +58,7 @@ public class Board {
 		return null;
 	}
 
-	public void addShip(final Ship ship) throws InvalidShipPlacement, OutOfBoundsCoordinate {
+	public void addShip(final Ship ship) throws InvalidShipPlacement, OutOfBoundsCoordinate, IllegalArgumentException {
 		forEachShip((Ship s) -> {
 			if (s.getName() == ship.getName()) {
 				throw new IllegalArgumentException();
@@ -68,8 +68,8 @@ public class Board {
 		fleet.add(ship);
 	}
 
-	public void addShip(final String name, int length, final BoardCoordinate head, final Direction direction)
-			throws InvalidShipPlacement, OutOfBoundsCoordinate {
+	public void addShip(final String name, int length, final BoardCoordinate head, final Direction direction) 
+			throws InvalidShipPlacement, OutOfBoundsCoordinate, IllegalArgumentException {
 		addShip(new Ship(name, length, head, direction));
 	}
 
