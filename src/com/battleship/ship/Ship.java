@@ -1,12 +1,12 @@
 package com.battleship.ship;
 
 import com.battleship.utils.Direction;
-import com.battleship.utils.Vec2D;
+import com.battleship.utils.BoardCoordinate;
 
 public class Ship {
 	private int length, hitpoints;
 	private String name; 
-	private Vec2D head, tail;
+	private BoardCoordinate head, tail;
 	private Direction direction;
 	
 	public Ship() {
@@ -22,15 +22,15 @@ public class Ship {
 		this.length = other.getLength();
 		this.hitpoints = other.getHitpoints();
 		this.name = other.getName();
-		this.head = new Vec2D(other.getHead());
-		this.tail = new Vec2D(other.getTail());
+		this.head = new BoardCoordinate(other.getHead());
+		this.tail = new BoardCoordinate(other.getTail());
 		this.direction = other.getDirection();
 	}
 
-	public Ship(final String name, int length, final Vec2D head, Direction d) {
+	public Ship(final String name, int length, final BoardCoordinate head, Direction d) {
 		this.length = length;
 		this.name = name;
-		this.head = new Vec2D(head);
+		this.head = new BoardCoordinate(head);
 		this.direction = d;
 		this.hitpoints = 0;
 		calcTail();
@@ -84,36 +84,36 @@ public class Ship {
 		this.name = name;
 	}
 
-	public Vec2D getHead() {
+	public BoardCoordinate getHead() {
 		return head;
 	}
 
-	public void setHead(Vec2D head) {
+	public void setHead(BoardCoordinate head) {
 		this.head = head;
 	}
 
-	public Vec2D getTail() {
+	public BoardCoordinate getTail() {
 		return tail;
 	}
 
-	public void setTail(Vec2D tail) {
+	public void setTail(BoardCoordinate tail) {
 		this.tail = tail;
 	}
 
 	public void calcTail() {
-		Vec2D tail = new Vec2D(head);
+		BoardCoordinate tail = new BoardCoordinate(head);
 		switch(direction) {
 		case East:
-			tail.addX(length-1);
+			tail.addCollumn(length-1);
 			break;
 		case North:
-			tail.subtractY(length-1);
+			tail.subtractRow(length-1);
 			break;
 		case South:
-			tail.addY(length-1);
+			tail.addRow(length-1);
 			break;
 		case West:
-			tail.subtractX(length-1);
+			tail.subtractCollumn(length-1);
 			break;
 		}
 		this.tail = tail;

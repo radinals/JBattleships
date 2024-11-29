@@ -7,72 +7,19 @@ import com.battleship.exception.InvalidShipPlacement;
 import com.battleship.exception.OutOfBoundsCoordinate;
 import com.battleship.ship.Ship;
 import com.battleship.utils.Direction;
-import com.battleship.utils.Vec2D;
+import com.battleship.utils.BoardCoordinate;
 
 public class Board {
-	public interface ForEachCellOperation {
-		void run(BoardCell cell, Vec2D coord);
-	}
-
-	public interface ForEachShipOperation {
-		void run(Ship ship);
-	}
-
-	public ArrayList<Vec2D> getShipBodyCoordinate(final Ship ship) {
-		ArrayList<Vec2D> ship_body = new ArrayList<>();
-
-		Vec2D body = new Vec2D(ship.getHead());
-
-		for (int i = 0; i < ship.getLength(); i++) {
-
-			if (body.getY() < 0 || body.getY() >= board_height || body.getX() < 0 || body.getX() >= board_width)
-				return null;
-
-			ship_body.add(new Vec2D(body));
-			switch (ship.getDirection()) {
-			case East:
-				body.addX(1);
-				break;
-			case North:
-				body.subtractY(1);
-				break;
-			case South:
-				body.addY(1);
-				break;
-			case West:
-				body.subtractX(1);
-				break;
-			}
-
-		}
-
-		return ship_body;
-	}
-
 	private BoardCell[][] board;
-
 	private int board_width, board_height;
-
 	private ArrayList<Ship> fleet;
 
-	public Ship getShip(String name) {
-		for (Ship ship : fleet) {
-			if (ship.getName() == name)
-				return ship;
-		}
-		return null;
-	}
+	public interface ForEachCellOperation { void run(BoardCell cell, BoardCoordinate coord); }
+	public interface ForEachShipOperation { void run(Ship ship); }
+
 
 	public Board(Board other) {
-		board_width = other.getBoardWidth();
-		board_height = other.getBoardHeight();
-
-		fleet = new ArrayList<>(other.getFleet());
-		board = new BoardCell[board_height][board_width];
-
-		other.forEachCell((BoardCell cell, Vec2D coord) -> {
-			board[coord.getY()][coord.getX()] = new BoardCell(cell);
-		});
+		copyBoard(other);
 	}
 
 	public Board(int width, int heigth) {
@@ -80,9 +27,35 @@ public class Board {
 		board = new BoardCell[heigth][width];
 		board_width = width;
 		board_height = heigth;
-		forEachCell((BoardCell cell, Vec2D coord) -> {
-			board[coord.getY()][coord.getX()] = new BoardCell();
+		forEachCell((BoardCell cell, BoardCoordinate coord) -> {
+			board[coord.getRow()][coord.getCollumn()] = new BoardCell();
 		});
+	}
+	
+	public void copyBoard(Board other) {
+		board_width = other.getBoardWidth();
+		board_height = other.getBoardHeight();
+
+		fleet = new ArrayList<>(other.getFleet());
+		board = new BoardCell[board_height][board_width];
+
+		other.forEachCell((BoardCell cell, BoardCoordinate coord) -> {
+		board[coord.getRow()][coord.getCollumn()] = new BoardCell(cell);
+		});
+	}
+
+	public BoardCell shootAtCell(final BoardCoordinate coord) {
+		return shootAtCell(coord.getCollumn(), coord.getRow());
+	}
+
+
+
+	public Ship getShip(String name) {
+		for (Ship ship : fleet) {
+			if (ship.getName() == name)
+				return ship;
+		}
+		return null;
 	}
 
 	public void addShip(final Ship ship) throws InvalidShipPlacement, OutOfBoundsCoordinate {
@@ -95,7 +68,7 @@ public class Board {
 		fleet.add(ship);
 	}
 
-	public void addShip(final String name, int length, final Vec2D head, final Direction direction)
+	public void addShip(final String name, int length, final BoardCoordinate head, final Direction direction)
 			throws InvalidShipPlacement, OutOfBoundsCoordinate {
 		addShip(new Ship(name, length, head, direction));
 	}
@@ -104,14 +77,14 @@ public class Board {
 		return board[y][x];
 	}
 
-	public BoardCell cellAt(Vec2D coord) throws ArrayIndexOutOfBoundsException {
-		return cellAt(coord.getX(), coord.getY());
+	public BoardCell cellAt(BoardCoordinate coord) throws ArrayIndexOutOfBoundsException {
+		return cellAt(coord.getCollumn(), coord.getRow());
 	}
 
 	public void forEachCell(ForEachCellOperation operation) {
 		for (int y = 0; y < board_height; y++) {
 			for (int x = 0; x < board_width; x++) {
-				operation.run(getCell(x, y), new Vec2D(x, y));
+				operation.run(getCell(x, y), new BoardCoordinate(x, y));
 			}
 		}
 	}
@@ -122,42 +95,13 @@ public class Board {
 		}
 	}
 
-	public void forEachShipBody(Ship ship, ForEachCellOperation operation) {
-		for (Vec2D coord : getShipBodyCoordinate(ship)) {
+	public void forEachShipBody(Ship ship, ForEachCellOperation operation) throws ArrayIndexOutOfBoundsException, OutOfBoundsCoordinate {
+		for (BoardCoordinate coord : getShipBodyCoordinate(ship)) {
 			BoardCell cell = getCell(coord);
 			operation.run(cell, coord);
 		}
 	}
 
-	public BoardCell[][] getBoard() {
-		return board;
-	}
-
-	public int getBoardHeight() {
-		return board_height;
-	}
-
-	public int getBoardWidth() {
-		return board_width;
-	}
-
-	public BoardCell getCell(int x, int y) throws ArrayIndexOutOfBoundsException {
-		if ((x < 0 || x >= board_width) || (y < 0 || y >= board_height))
-			throw new ArrayIndexOutOfBoundsException();
-		return board[y][x];
-	}
-
-	public BoardCell getCell(Vec2D coord) throws ArrayIndexOutOfBoundsException {
-		return getCell(coord.getX(), coord.getY());
-	}
-
-	public ArrayList<Ship> getFleet() {
-		return fleet;
-	}
-
-	public int getTotalShipsInFleet() {
-		return fleet.size();
-	}
 
 	public boolean isAllShipIsDestroyed() {
 		for (Ship s : fleet)
@@ -167,41 +111,43 @@ public class Board {
 	}
 
 	private void placeShipInBoard(final Ship ship) throws InvalidShipPlacement, OutOfBoundsCoordinate {
-		ArrayList<Vec2D> body_coordinate = getShipBodyCoordinate(ship);
-		if (body_coordinate == null)
-			throw new OutOfBoundsCoordinate();
-		for (Vec2D coord : body_coordinate) {
 
-			System.out.println(coord);
+		ArrayList<BoardCoordinate> body_coordinate = getShipBodyCoordinate(ship);
 
-			BoardCell cell = getCell(coord);
+		Board tmpBoard = new Board(this);
+
+		for (BoardCoordinate coord : body_coordinate) {
+
+			BoardCell cell = tmpBoard.getCell(coord);
 
 			if (cell.getStatus() != BoardCellStatus.Empty)
 				throw new InvalidShipPlacement();
 
-			cell.setStatus(BoardCellStatus.Ship);
 			cell.setShip(ship);
 		}
+		
+		this.copyBoard(tmpBoard);
+		
 	}
 
 	public void resetBoard() {
-		forEachCell((BoardCell cell, Vec2D _) -> {
+		forEachCell((BoardCell cell, BoardCoordinate _) -> {
 			cell.setStatus(BoardCellStatus.Empty);
 		});
 	}
 
 	public void rotateShip(Ship ship) throws InvalidShipPlacement, OutOfBoundsCoordinate, IllegalArgumentException {
-		Vec2D head, tail;
+		BoardCoordinate head, tail;
 		head = ship.getHead();
 		tail = ship.getTail();
 
-		if (head.getY() == tail.getY() && head.getX() > tail.getX())
+		if (head.getRow() == tail.getRow() && head.getCollumn() > tail.getCollumn())
 			rotateShip(ship, Direction.North);
-		else if (head.getY() == tail.getY() && head.getX() < tail.getX())
+		else if (head.getRow() == tail.getRow() && head.getCollumn() < tail.getCollumn())
 			rotateShip(ship, Direction.South);
-		else if (head.getX() == tail.getX() && head.getY() > tail.getY())
+		else if (head.getCollumn() == tail.getCollumn() && head.getRow() > tail.getRow())
 			rotateShip(ship, Direction.West);
-		else if (head.getX() == tail.getX() && head.getY() < tail.getY())
+		else if (head.getCollumn() == tail.getCollumn() && head.getRow() < tail.getRow())
 			rotateShip(ship, Direction.East);
 	}
 
@@ -216,8 +162,8 @@ public class Board {
 			removeShip(ship); // remove the ship from the board
 			ship.setDirection(direction);
 			ship.calcTail();
-			if (ship.getTail().getY() < 0 || ship.getTail().getY() >= board_height || ship.getTail().getX() < 0
-					|| ship.getTail().getX() >= board_width)
+			if (ship.getTail().getRow() < 0 || ship.getTail().getRow() >= board_height || ship.getTail().getCollumn() < 0
+					|| ship.getTail().getCollumn() >= board_width)
 				throw new OutOfBoundsCoordinate();
 			placeShipInBoard(ship);
 		} catch (Exception e) {
@@ -239,14 +185,14 @@ public class Board {
 		}
 	}
 
-	public void removeShip(Ship ship) {
-		forEachShipBody(ship, (BoardCell cell, Vec2D _) -> {
+	public void removeShip(Ship ship) throws OutOfBoundsCoordinate {
+		forEachShipBody(ship, (BoardCell cell, BoardCoordinate _) -> {
 			cell.setStatus(BoardCellStatus.Empty);
 			cell.setShip(null);
 		});
 	}
 
-	public void moveShip(String name, Vec2D new_head) throws BattleshipException {
+	public void moveShip(String name, BoardCoordinate new_head) throws BattleshipException {
 		for (Ship ship : fleet) {
 			if (ship.getName() == name) {
 				moveShip(ship, new_head);
@@ -255,17 +201,16 @@ public class Board {
 		}
 	}
 
-	public void moveShip(Ship ship, Vec2D new_head) throws BattleshipException {
-
+	public void moveShip(Ship ship, BoardCoordinate new_head) throws BattleshipException {
 		removeShip(ship);
-		Vec2D oldh = new Vec2D(ship.getHead());
+		BoardCoordinate oldh = new BoardCoordinate(ship.getHead());
 		try {
 			ship.setHead(new_head);
 			ship.calcTail();
-			if (ship.getHead().getY() < 0 || ship.getHead().getY() >= board_height || ship.getHead().getX() < 0
-					|| ship.getHead().getX() >= board_width || ship.getTail().getY() < 0
-					|| ship.getTail().getY() >= board_height || ship.getTail().getX() < 0
-					|| ship.getTail().getX() >= board_width)
+			if (ship.getHead().getRow() < 0 || ship.getHead().getRow() >= board_height || ship.getHead().getCollumn() < 0
+					|| ship.getHead().getCollumn() >= board_width || ship.getTail().getRow() < 0
+					|| ship.getTail().getRow() >= board_height || ship.getTail().getCollumn() < 0
+					|| ship.getTail().getCollumn() >= board_width)
 				throw new OutOfBoundsCoordinate();
 			placeShipInBoard(ship);
 			System.out.println("Moved " + oldh + " to " + new_head);
@@ -290,9 +235,6 @@ public class Board {
 		BoardCell cell = cellAt(x, y);
 
 		switch (cell.getStatus()) {
-		case Hit:
-		case Miss:
-			return cell;
 		case Empty:
 			cell.setStatus(BoardCellStatus.Miss);
 			return cell;
@@ -300,13 +242,83 @@ public class Board {
 			cell.setStatus(BoardCellStatus.Hit);
 			cell.getShip().takeAHit();
 			return cell;
+		case Hit:
+		case Miss:
 		default:
 			return null;
 		}
 	}
 
-	public BoardCell shootAtCell(final Vec2D coord) {
-		return shootAtCell(coord.getX(), coord.getY());
+	public ArrayList<BoardCoordinate> getShipBodyCoordinate(final Ship ship) throws OutOfBoundsCoordinate {
+		ArrayList<BoardCoordinate> ship_body = new ArrayList<>();
+
+		BoardCoordinate body = new BoardCoordinate(ship.getHead());
+
+		if (ship.getHead().getRow() < 0 || ship.getHead().getRow() >= board_height || ship.getHead().getCollumn() < 0 || ship.getHead().getCollumn() >= board_width)
+			throw new OutOfBoundsCoordinate();
+
+		if (ship.getTail().getRow() < 0 || ship.getTail().getRow() >= board_height || ship.getTail().getCollumn() < 0 || ship.getTail().getCollumn() >= board_width)
+			throw new OutOfBoundsCoordinate();
+
+		for (int i = 0; i < ship.getLength(); i++) {
+
+			if (body.getRow() < 0 || body.getRow() >= board_height || body.getCollumn() < 0 || body.getCollumn() >= board_width)
+				throw new OutOfBoundsCoordinate();
+
+			ship_body.add(new BoardCoordinate(body));
+			switch (ship.getDirection()) {
+			case East:
+				body.addCollumn(1);
+				break;
+			case North:
+				body.subtractRow(1);
+				break;
+			case South:
+				body.addRow(1);
+				break;
+			case West:
+				body.subtractCollumn(1);
+				break;
+			}
+
+		}
+		return ship_body;
+	}
+
+	public BoardCell[][] getBoard() {
+		return board;
+	}
+
+	public int getBoardHeight() {
+		return board_height;
+	}
+
+	public int getBoardWidth() {
+		return board_width;
+	}
+
+	public BoardCell getCell(int x, int y) throws ArrayIndexOutOfBoundsException {
+		if ((x < 0 || x >= board_width) || (y < 0 || y >= board_height))
+			throw new ArrayIndexOutOfBoundsException();
+		return board[y][x];
+	}
+
+	public BoardCell getCell(BoardCoordinate coord) throws ArrayIndexOutOfBoundsException {
+		return getCell(coord.getCollumn(), coord.getRow());
+	}
+	
+	public BoardCellStatus getCellStatus(BoardCoordinate coord) {
+			BoardCell cell =  getCell(coord.getCollumn(), coord.getRow());
+			if (cell == null) return null;
+			return cell.getStatus();
+	}
+
+	public ArrayList<Ship> getFleet() {
+		return fleet;
+	}
+
+	public int getTotalShipsInFleet() {
+		return fleet.size();
 	}
 
 	@Override

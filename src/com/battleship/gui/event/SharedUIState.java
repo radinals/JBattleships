@@ -1,5 +1,6 @@
-package com.battleship.gui.state;
+package com.battleship.gui.event;
 
+// TODO: REFACTOR THIS OUT
 public class SharedUIState {
 	private enum BoardUIMode { PlacementMode, BattleMode }
 

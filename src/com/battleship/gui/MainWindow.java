@@ -13,10 +13,14 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
+import com.battleship.board.Board;
+import com.battleship.board.BoardCellStatus;
 import com.battleship.game.Players;
-import com.battleship.gui.state.SharedUIState;
+import com.battleship.gui.callback.ShotEvent;
+import com.battleship.gui.event.SharedUIState;
 import com.battleship.gui.widget.ActionButton;
-import com.battleship.gui.widget.GUIBoard;
+import com.battleship.gui.widget.guiboard.GUIBoard;
+import com.battleship.utils.BoardCoordinate;
 
 public class MainWindow extends JFrame {
 	private GUIBoard player_board, opponent_board;
@@ -37,6 +41,8 @@ public class MainWindow extends JFrame {
 
 		player_board = new GUIBoard(players.getPlayer_board(), shared_state);
 		opponent_board = new GUIBoard(players.getOpponent_board(), shared_state);
+	
+		opponent_board.setOnShotEventCallback(this::onPlayerShot);
 		
 		for(Map.Entry<String, Integer> entry : ship_pieces.entrySet())
 			player_board.enqueShipPiece(entry);
@@ -91,10 +97,15 @@ public class MainWindow extends JFrame {
 		add(opponent_board);
 		add(log_widget);
 		add(game_buttons);
-
+	}
+	
+	public void shootAtPlayer(BoardCoordinate coord) {
+		player_board.shootAtBoard(coord);
 	}
 
-// ############################################################## Getter/Setter
+	private void onPlayerShot(BoardCoordinate coord) {
+		opponent_board.shootAtBoard(coord);
+	}
 	
 	@Override
 	public Dimension getPreferredSize() {

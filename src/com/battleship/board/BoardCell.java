@@ -34,6 +34,7 @@ public class BoardCell {
 	}
 
 	public void setShip(Ship ship) {
+		if (ship != null) status = BoardCellStatus.Ship;
 		this.ship = ship;
 	}
 	
