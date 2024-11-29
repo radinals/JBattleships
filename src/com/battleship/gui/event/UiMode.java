@@ -1,28 +1,27 @@
 package com.battleship.gui.event;
 
-// TODO: REFACTOR THIS OUT
-public class SharedUIState {
+public class UiMode {
 	private enum BoardUIMode { PlacementMode, BattleMode }
 
 	private static BoardUIMode ui_mode;
 	
-	public SharedUIState() {
+	public UiMode() {
 		setInPlacementMode();
 	}
 
-	public void setInPlacementMode() {
+	public static void setInPlacementMode() {
 		ui_mode = BoardUIMode.PlacementMode;
 	}
 	
-	public void setInBattleMode() {
+	public static void setInBattleMode() {
 		ui_mode = BoardUIMode.BattleMode;
 	}
 	
-	public boolean inPlacementMode() {
+	public static boolean inPlacementMode() {
 		return ui_mode == BoardUIMode.PlacementMode;
 	}
 
-	public boolean inBattleMode() {
+	public static boolean inBattleMode() {
 		return ui_mode == BoardUIMode.BattleMode;
 	}
 }

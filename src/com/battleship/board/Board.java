@@ -48,8 +48,6 @@ public class Board {
 		return shootAtCell(coord.getCollumn(), coord.getRow());
 	}
 
-
-
 	public Ship getShip(String name) {
 		for (Ship ship : fleet) {
 			if (ship.getName() == name)

@@ -17,7 +17,7 @@ import com.battleship.board.Board;
 import com.battleship.board.BoardCellStatus;
 import com.battleship.game.Players;
 import com.battleship.gui.callback.ShotEvent;
-import com.battleship.gui.event.SharedUIState;
+import com.battleship.gui.event.UiMode;
 import com.battleship.gui.widget.ActionButton;
 import com.battleship.gui.widget.guiboard.GUIBoard;
 import com.battleship.utils.BoardCoordinate;
@@ -28,28 +28,27 @@ public class MainWindow extends JFrame {
 	private JButton exit_button;
 	private ActionButton action_button;
 	private JTextArea log_widget;
-	private SharedUIState shared_state;
+	private UiMode UiMode;
 	
-	public MainWindow(Players players, HashMap<String, Integer> ship_pieces) {
+	public MainWindow(Players players, HashMap<String, Integer> ship_pieces, ShotEvent shotCallback) {
 		setTitle("Battleships");
-		
         setVisible(true);
 		setSize(800,600);
 		setLayout(new GridLayout(2, 2, 10, 10)); // 1 row, 2 columns
 		
-		shared_state = new SharedUIState();
+		UiMode = new UiMode();
 
-		player_board = new GUIBoard(players.getPlayer_board(), shared_state);
-		opponent_board = new GUIBoard(players.getOpponent_board(), shared_state);
+		player_board = new GUIBoard(players.getPlayer_board(), UiMode, false);
+		opponent_board = new GUIBoard(players.getOpponent_board(), UiMode, true);
 	
-		opponent_board.setOnShotEventCallback(this::onPlayerShot);
+		opponent_board.setOnShotEventCallback(shotCallback);
 		
 		for(Map.Entry<String, Integer> entry : ship_pieces.entrySet())
 			player_board.enqueShipPiece(entry);
 		
 		player_board.loadNextShipInQueue();
 		
-		shared_state.setInPlacementMode();
+		com.battleship.gui.event.UiMode.setInPlacementMode();
 
 		log_widget = new JTextArea();
 		game_buttons = new JPanel();
@@ -66,10 +65,9 @@ public class MainWindow extends JFrame {
 				if (action_button.isResetMode()) {
 					System.out.println("RESET BTN");
 				} else {
-					player_board.loadNextShipInQueue();
 					if (!player_board.hasQueuedShipPlacement()) {
 						action_button.setResetMode();
-						shared_state.setInBattleMode();
+						com.battleship.gui.event.UiMode.setInBattleMode();
 					}
 					System.out.println("CONFIRM BTN");
 				}
@@ -92,19 +90,19 @@ public class MainWindow extends JFrame {
 		game_buttons.add(action_button);
 		game_buttons.add(exit_button);
 		
-
 		add(player_board);
 		add(opponent_board);
 		add(log_widget);
 		add(game_buttons);
 	}
 	
-	public void shootAtPlayer(BoardCoordinate coord) {
-		player_board.shootAtBoard(coord);
+	
+	public GUIBoard getPlayerBoard() {
+		return player_board;
 	}
 
-	private void onPlayerShot(BoardCoordinate coord) {
-		opponent_board.shootAtBoard(coord);
+	public GUIBoard getOpponentBoard() {
+		return opponent_board;
 	}
 	
 	@Override
