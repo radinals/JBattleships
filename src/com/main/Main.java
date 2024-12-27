@@ -1,4 +1,4 @@
-package Main;
+package com.main;
 
 import com.controller.GameCore;
 
