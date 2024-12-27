@@ -47,7 +47,7 @@ public class GameCore {
     playerCurrentHeldShip = null;
 
   }
-  
+
   public void run() {
     SwingUtilities.invokeLater(() -> {
       this.mainWindow = new MainWindow(1200, 600, this);

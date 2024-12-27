@@ -5,5 +5,5 @@
  * 
  */
 module Battleships {
-	requires java.desktop;
+  requires java.desktop;
 }

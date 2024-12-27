@@ -4,41 +4,41 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 public class UserInputHandler implements KeyListener {
-  
+
   private GameCore gameCore;
 
   public UserInputHandler(GameCore gameCore) {
-   this.gameCore = gameCore; 
+    this.gameCore = gameCore;
   }
-  
+
   @Override
   public void keyPressed(KeyEvent e) {
-    switch(e.getKeyCode()) {
+    switch (e.getKeyCode()) {
       case KeyEvent.VK_UP:
         if (gameCore.inPlacementPhase())
           gameCore.getMainWindow().movePlayerCursorUp();
-        else 
+        else
           gameCore.getMainWindow().moveOpponentCursorUp();
         onCursorMovement();
         break;
       case KeyEvent.VK_DOWN:
         if (gameCore.inPlacementPhase())
           gameCore.getMainWindow().movePlayerCursorDown();
-        else 
+        else
           gameCore.getMainWindow().moveOpponentCursorDown();
         onCursorMovement();
         break;
       case KeyEvent.VK_LEFT:
         if (gameCore.inPlacementPhase())
           gameCore.getMainWindow().movePlayerCursorLeft();
-        else 
+        else
           gameCore.getMainWindow().moveOpponentCursorLeft();
         onCursorMovement();
         break;
       case KeyEvent.VK_RIGHT:
         if (gameCore.inPlacementPhase())
           gameCore.getMainWindow().movePlayerCursorRight();
-        else 
+        else
           gameCore.getMainWindow().moveOpponentCursorRight();
         onCursorMovement();
         break;
@@ -57,10 +57,10 @@ public class UserInputHandler implements KeyListener {
         break;
     }
   }
-  
+
   private void onCursorMovement() {
-    
-    if(gameCore.inPlacementPhase()) {
+
+    if (gameCore.inPlacementPhase()) {
       try {
 
         gameCore.placePlayerHeldShip();
@@ -71,16 +71,16 @@ public class UserInputHandler implements KeyListener {
         e.printStackTrace();
         return;
       }
-      
+
     } else if (gameCore.inBattlePhase()) {
       gameCore.getMainWindow().repaintopponentBoardView();
       return;
     }
-    
+
   }
 
   private void onEnterKeyPress() {
-    if(gameCore.inPlacementPhase()) {
+    if (gameCore.inPlacementPhase()) {
       try {
         gameCore.confirmShipPlacment();
 
@@ -92,14 +92,14 @@ public class UserInputHandler implements KeyListener {
         return;
       }
 
-      if(gameCore.placementQueueisEmpty() && !gameCore.playerHasHeldShip()) {
+      if (gameCore.placementQueueisEmpty() && !gameCore.playerHasHeldShip()) {
         gameCore.setToBattlePhase();
         gameCore.getMainWindow().showOpponentCursor();
         gameCore.getMainWindow().hidePlayerCursor();
         gameCore.getMainWindow().repaintopponentBoardView();
         gameCore.getMainWindow().repaintPlayerBoardView();
       }
-    
+
     } else if (gameCore.inBattlePhase()) {
       if (!gameCore.isGameOver()) {
         try {
@@ -115,7 +115,12 @@ public class UserInputHandler implements KeyListener {
     }
   }
 
-  @Override public void keyReleased(KeyEvent e) { }
-  @Override public void keyTyped(KeyEvent e) { }
+  @Override
+  public void keyReleased(KeyEvent e) {
+  }
+
+  @Override
+  public void keyTyped(KeyEvent e) {
+  }
 
 }

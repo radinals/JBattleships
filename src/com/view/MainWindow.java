@@ -15,8 +15,8 @@ public class MainWindow extends JFrame {
 
   public MainWindow(int width, int height, GameCore gameCore) {
     setTitle("Battleship");
-    setSize(width,height);
-    setLayout(new GridLayout(1,2));
+    setSize(width, height);
+    setLayout(new GridLayout(1, 2));
     setVisible(true);
     setLocationRelativeTo(null);
     setFocusable(true);
@@ -32,7 +32,7 @@ public class MainWindow extends JFrame {
     revalidate();
     repaint();
   }
-  
+
   public void recoverPlayerCursorPos() {
     playerBoardView.recoverPrevCursorPos();
   }
@@ -56,21 +56,21 @@ public class MainWindow extends JFrame {
   public void movePlayerCursorRight() {
     playerBoardView.moveCursorRight();
   }
-  
+
   public void showPlayerShips() {
-   playerBoardView.showShips(); 
+    playerBoardView.showShips();
   }
-  
+
   public void hidePlayerShips() {
-   playerBoardView.hideShips(); 
+    playerBoardView.hideShips();
   }
 
   public void showOpponentShips() {
-   opponentBoardView.showShips(); 
+    opponentBoardView.showShips();
   }
-  
+
   public void hideOpponentShips() {
-   opponentBoardView.hideShips(); 
+    opponentBoardView.hideShips();
   }
 
   public void showPlayerCursor() {
@@ -90,7 +90,7 @@ public class MainWindow extends JFrame {
   }
 
   public void repaintopponentBoardView() {
-    opponentBoardView.repaint(); 
+    opponentBoardView.repaint();
   }
 
   public void hideOpponentCursor() {

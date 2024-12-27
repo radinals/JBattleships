@@ -1,5 +1,5 @@
 package com.model;
 
 public enum ShipOrientation {
-	NORTH, SOUTH, EAST, WEST
+  NORTH, SOUTH, EAST, WEST
 }

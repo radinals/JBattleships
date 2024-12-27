@@ -6,9 +6,9 @@ import com.model.GameBoard;
 import com.model.Ship;
 
 public class PlayerEventHandler implements GameBoard.BoardEvents {
-  
+
   GameCore gameCore;
-  
+
   public PlayerEventHandler(GameCore gameCore) {
     this.gameCore = gameCore;
   }
@@ -24,13 +24,13 @@ public class PlayerEventHandler implements GameBoard.BoardEvents {
       System.exit(-1);
     }
   }
-  
+
   @Override
   public void onShotHit(Ship ship, int x, int y) {
-    gameCore.generateAIGuess(new Point(x,y));
+    gameCore.generateAIGuess(new Point(x, y));
     gameCore.getMainWindow().repaintPlayerBoardView();
   }
-  
+
   @Override
   public void onShotMiss(int x, int y) {
     gameCore.getMainWindow().repaintPlayerBoardView();

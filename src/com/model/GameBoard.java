@@ -11,16 +11,21 @@ public class GameBoard implements ShipEvents {
   private GameBoardCell[][] board;
   private HashMap<ShipType, Ship> ships;
   private int sunkShipsCounter;
-  
+
   public interface BoardEvents {
     public void onAllShipSunk(GameBoard board);
+
     public void onShipAdded(final Ship ship);
+
     public void onShipMoved(final Ship ship);
+
     public void onShipRotate(final Ship ship);
+
     public void onShotHit(final Ship ship, int x, int y);
+
     public void onShotMiss(int x, int y);
   }
-  
+
   private BoardEvents boardEvents;
 
   public GameBoard(int boardSize) {
@@ -32,7 +37,7 @@ public class GameBoard implements ShipEvents {
     this.board = new GameBoardCell[boardSize][boardSize];
     this.ships = new HashMap<ShipType, Ship>();
     this.sunkShipsCounter = 0;
-    this.boardEvents= boardEventHandler;
+    this.boardEvents = boardEventHandler;
 
     initBoard(board, boardSize);
   }
@@ -51,16 +56,18 @@ public class GameBoard implements ShipEvents {
 
   private boolean placementValid(Ship ship) {
     for (int[] point : ship.getShipBody()) {
-      if (!pointInBounds(point[0],point[1])) return false;
+      if (!pointInBounds(point[0], point[1]))
+        return false;
 
       for (ShipType k : ships.keySet()) {
-        if (ships.get(k).pointIntersectBody(point[0], point[1])) return false;
+        if (ships.get(k).pointIntersectBody(point[0], point[1]))
+          return false;
       }
 
     }
     return true;
   }
-  
+
   private boolean placeShip(Ship ship) {
 
     if (!placementValid(ship))
@@ -80,7 +87,8 @@ public class GameBoard implements ShipEvents {
 
       CopyUtil.deepCopyMatrix(tmpBoard, this.board, GameBoardCell::new);
 
-      if (boardEvents != null) boardEvents.onShipAdded(ship);
+      if (boardEvents != null)
+        boardEvents.onShipAdded(ship);
 
     } catch (Exception e) {
       e.printStackTrace();
@@ -90,7 +98,8 @@ public class GameBoard implements ShipEvents {
     return true;
   }
 
-  public boolean placeShip(int x, int y, ShipType type, ShipOrientation orientation) {
+  public boolean placeShip(int x, int y, ShipType type,
+      ShipOrientation orientation) {
     Ship ship = new Ship(x, y, type, orientation, this);
     return placeShip(ship);
   }
@@ -110,17 +119,17 @@ public class GameBoard implements ShipEvents {
 
     CopyUtil.deepCopyMatrix(tmpBoard, this.board, GameBoardCell::new);
   }
-  
+
   public void rotateShip(ShipType type) throws Exception {
-    Ship ship = getShip(type); 
+    Ship ship = getShip(type);
     if (ship != null) {
       removeShip(ship);
 
       ship.rotateRight();
 
-      if(!placementValid(ship)) {
-          ship.restorePrevOrientation();
-        if(!placementValid(ship)) {
+      if (!placementValid(ship)) {
+        ship.restorePrevOrientation();
+        if (!placementValid(ship)) {
           System.err.println("Failed to restore ship after rotate failure.");
           System.exit(-1);
         }
@@ -131,7 +140,8 @@ public class GameBoard implements ShipEvents {
 
       placeShip(ship);
 
-      if (boardEvents != null) boardEvents.onShipRotate(ship);
+      if (boardEvents != null)
+        boardEvents.onShipRotate(ship);
     }
   }
 
@@ -140,7 +150,7 @@ public class GameBoard implements ShipEvents {
   }
 
   public Ship getShip(ShipType type) {
-    return ships.getOrDefault(type,null);
+    return ships.getOrDefault(type, null);
   }
 
   public GameBoardCell cellAt(int line, int column)
@@ -188,25 +198,26 @@ public class GameBoard implements ShipEvents {
         cell.setMarkHit();
         Ship ship = getShip(cell.ship);
         ship.takeHit();
-        if(boardEvents != null) boardEvents.onShotHit(ship, x, y);
+        if (boardEvents != null)
+          boardEvents.onShotHit(ship, x, y);
       } else {
         cell.setMarkMiss();
-        if(boardEvents != null) boardEvents.onShotMiss(x,y);
+        if (boardEvents != null)
+          boardEvents.onShotMiss(x, y);
       }
-      
+
     } catch (IndexOutOfBoundsException e) {
-      System.err.println(String.format("invalid shot %d,%d",x,y ));
+      System.err.println(String.format("invalid shot %d,%d", x, y));
       e.printStackTrace();
       return false;
     } catch (NullPointerException e) {
       e.printStackTrace();
       System.exit(-1);
     }
-    
-    
+
     return true;
   }
-  
+
   public GameBoardCell[][] getBoard() {
     return board;
   }
@@ -235,10 +246,11 @@ public class GameBoard implements ShipEvents {
 
     return boardStr;
   }
+
   public boolean pointInBounds(int x, int y) {
     return (x >= 0 && x < boardSize) && (y >= 0 && y < boardSize);
   }
-  
+
   public void moveShip(ShipType type, int x, int y) throws Exception {
     Ship ship = getShip(type);
     if (ship != null) {
@@ -246,8 +258,8 @@ public class GameBoard implements ShipEvents {
 
       ship.moveHead(x, y);
 
-      if(!placementValid(ship)) {
-          ship.restorePrevPos();
+      if (!placementValid(ship)) {
+        ship.restorePrevPos();
 //        if(!placementValid(ship)) {
 //          System.err.println("Failed to restore ship after move failure.");
 //          System.exit(-1);
@@ -258,14 +270,15 @@ public class GameBoard implements ShipEvents {
 
       placeShip(ship);
 
-      if (boardEvents != null) boardEvents.onShipMoved(ship);
+      if (boardEvents != null)
+        boardEvents.onShipMoved(ship);
     }
 
   }
-  
+
   public void reset() {
     ships.clear();
-    sunkShipsCounter=0;
+    sunkShipsCounter = 0;
     for (GameBoardCell[] line : board) {
       for (GameBoardCell cell : line) {
         cell.removeShip();
@@ -273,7 +286,7 @@ public class GameBoard implements ShipEvents {
       }
     }
   }
-  
+
   public void removeShip(Ship ship) {
     ships.remove(ship.getShipType());
     for (int[] point : ship.getShipBody()) {
@@ -292,8 +305,8 @@ public class GameBoard implements ShipEvents {
     if (!allShipSunk()) {
       ++sunkShipsCounter;
 
-      if (boardEvents != null && allShipSunk()){
-       boardEvents.onAllShipSunk(this); 
+      if (boardEvents != null && allShipSunk()) {
+        boardEvents.onAllShipSunk(this);
       }
 
       System.err.println("SUNK: " + ship);
