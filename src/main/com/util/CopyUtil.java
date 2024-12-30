@@ -1,4 +1,4 @@
-package com.util;
+package main.com.util;
 
 import java.util.function.Function;
 

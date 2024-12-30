@@ -1,4 +1,4 @@
-package com.view;
+package main.com.view;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -10,9 +10,9 @@ import java.awt.geom.AffineTransform;
 
 import javax.swing.JPanel;
 
-import com.model.GameBoard;
-import com.model.GameBoardCell;
-import com.model.Ship;
+import main.com.model.GameBoard;
+import main.com.model.GameBoardCell;
+import main.com.model.Ship;
 
 public class BoardView extends JPanel {
 
@@ -118,16 +118,16 @@ public class BoardView extends JPanel {
     int rotation = 0;
     switch (ship.getOrientation()) {
       case EAST:
-        rotation = -90;
+        rotation = -270;
         break;
       case NORTH:
         rotation = 0;
         break;
       case SOUTH:
-        rotation = 0;
+        rotation = 180;
         break;
       case WEST:
-        rotation = -90;
+        rotation = 270;
         break;
       default:
         break;

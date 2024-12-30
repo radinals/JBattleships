@@ -1,14 +1,14 @@
-package com.controller;
+package main.com.controller;
 
 import java.awt.Point;
 import java.util.ArrayDeque;
 
 import javax.swing.SwingUtilities;
 
-import com.model.GameBoard;
-import com.model.ShipOrientation;
-import com.model.ShipType;
-import com.view.MainWindow;
+import main.com.model.GameBoard;
+import main.com.model.ShipOrientation;
+import main.com.model.ShipType;
+import main.com.view.MainWindow;
 
 public class GameCore {
 
@@ -53,6 +53,7 @@ public class GameCore {
       this.mainWindow = new MainWindow(1200, 600, this);
       this.mainWindow.addKeyListener(new UserInputHandler(this));
       mainWindow.hideOpponentShips();
+      mainWindow.showPlayerCursor();
       setToPlacementPhase();
     });
   }

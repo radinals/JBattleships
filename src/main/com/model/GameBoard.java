@@ -1,9 +1,12 @@
-package com.model;
+package main.com.model;
 
 import java.util.HashMap;
+import java.util.Map;
 
-import com.model.Ship.ShipEvents;
-import com.util.CopyUtil;
+import javax.swing.plaf.synth.SynthOptionPaneUI;
+
+import main.com.model.Ship.ShipEvents;
+import main.com.util.CopyUtil;
 
 public class GameBoard implements ShipEvents {
 
@@ -58,12 +61,11 @@ public class GameBoard implements ShipEvents {
     for (int[] point : ship.getShipBody()) {
       if (!pointInBounds(point[0], point[1]))
         return false;
-
-      for (ShipType k : ships.keySet()) {
-        if (ships.get(k).pointIntersectBody(point[0], point[1]))
+      
+      for( Map.Entry<ShipType, Ship> entry : ships.entrySet()) {
+        if (entry.getValue().pointIntersectBody(point[0], point[1]))
           return false;
       }
-
     }
     return true;
   }
@@ -82,7 +84,7 @@ public class GameBoard implements ShipEvents {
         int px = point[0], py = point[1];
         tmpBoard[py][px].setShip(ship.getShipType());
       }
-
+      
       ships.put(ship.getShipType(), ship);
 
       CopyUtil.deepCopyMatrix(tmpBoard, this.board, GameBoardCell::new);
@@ -169,27 +171,31 @@ public class GameBoard implements ShipEvents {
   }
 
   public boolean shotIsValid(int x, int y) {
-    if (x < 0 || x > boardSize || y < 0 || y > boardSize)
+    if (x < 0 || x >= boardSize || y < 0 || y >= boardSize)
       return false;
 
     try {
       GameBoardCell cell = cellAt(x, y);
-      if (cell.isMarkHit() || cell.isMarkMiss()) {
-        return false;
-      }
+      if (!cell.isMarkNone()) throw new Exception("Invalid Cell to Shoot at");
     } catch (IndexOutOfBoundsException e) {
+      e.printStackTrace();
       return false;
     } catch (NullPointerException e) {
       e.printStackTrace();
       System.exit(-1);
+    } catch (Exception e) {
+      e.printStackTrace();
+      return false;
     }
 
     return true;
   }
 
   public boolean shootAt(int x, int y) {
-    if (!shotIsValid(x, y))
+    if (!shotIsValid(x, y))  {
+      System.out.println("I1");
       return false;
+    }
 
     try {
       GameBoardCell cell = cellAt(x, y);
@@ -209,6 +215,7 @@ public class GameBoard implements ShipEvents {
     } catch (IndexOutOfBoundsException e) {
       System.err.println(String.format("invalid shot %d,%d", x, y));
       e.printStackTrace();
+      System.out.println("I2");
       return false;
     } catch (NullPointerException e) {
       e.printStackTrace();
@@ -260,10 +267,6 @@ public class GameBoard implements ShipEvents {
 
       if (!placementValid(ship)) {
         ship.restorePrevPos();
-//        if(!placementValid(ship)) {
-//          System.err.println("Failed to restore ship after move failure.");
-//          System.exit(-1);
-//        }
         placeShip(ship);
         throw new Exception("Invalid Move to " + x + "," + y);
       }

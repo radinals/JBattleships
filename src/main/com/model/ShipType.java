@@ -1,4 +1,4 @@
-package com.model;
+package main.com.model;
 
 public enum ShipType {
   CARRIER(5), BATTLESHIP(4), SUBMARINE(3), DESTROYER(3), BOAT(2);

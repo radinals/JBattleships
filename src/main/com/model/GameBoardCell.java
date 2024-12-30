@@ -1,4 +1,4 @@
-package com.model;
+package main.com.model;
 
 public class GameBoardCell {
 

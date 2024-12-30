@@ -1,13 +1,13 @@
-package com.controller;
+package main.com.controller;
 
 import java.awt.Point;
 import java.util.ArrayDeque;
 import java.util.random.RandomGenerator;
 
-import com.model.GameBoard;
-import com.model.Ship;
-import com.model.ShipOrientation;
-import com.model.ShipType;
+import main.com.model.GameBoard;
+import main.com.model.Ship;
+import main.com.model.ShipOrientation;
+import main.com.model.ShipType;
 
 public class AIPlayer implements GameBoard.BoardEvents {
 
@@ -52,7 +52,7 @@ public class AIPlayer implements GameBoard.BoardEvents {
     RandomGenerator randomGenerator = RandomGenerator.of("Random");
     return randomGenerator.nextInt(min, max);
   }
-
+  
   public Point getRandomGuess() {
     int x, y;
     do {
@@ -64,18 +64,16 @@ public class AIPlayer implements GameBoard.BoardEvents {
 
   public void shootAtBoard() {
     Point shot = null;
-    if (shotGuesses.isEmpty()) {
-      shot = getRandomGuess();
-    } else {
-      shot = shotGuesses.poll();
-    }
+    // make sure the shot is valid
+    do {
+      if (!shotGuesses.isEmpty()) {
+        shot = shotGuesses.poll();
+      } else {
+        shot = getRandomGuess();
+      }
+    } while(!gameCore.getPlayerBoard().shotIsValid(shot.x, shot.y));
 
-    System.err.println(String.format("ENEMY shot %d,%d", shot.x, shot.y));
-    // FIXME: BUG: This could be triggered sometimes
-    if (!gameCore.getPlayerBoard().shootAt(shot.x, shot.y)) {
-      System.exit(-1);
-    }
-
+    gameCore.getPlayerBoard().shootAt(shot.x, shot.y);
   }
 
   @Override

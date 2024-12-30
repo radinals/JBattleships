@@ -1,4 +1,4 @@
-package com.model;
+package main.com.model;
 
 public class Ship {
   private int hx, hy, tx, ty, oldx, oldy;
@@ -17,8 +17,11 @@ public class Ship {
 
   private ShipEvents shipEvent;
 
-  public Ship(int hx, int hy, ShipType type, ShipOrientation orientation,
-      ShipEvents shipEventHandler) {
+  public Ship(int hx, int hy, ShipType type, ShipOrientation orientation) {
+    this(hx,hy,type,orientation,null);
+  }
+
+  public Ship(int hx, int hy, ShipType type, ShipOrientation orientation, ShipEvents shipEventHandler) {
     this.hx = hx;
     this.hy = hy;
     this.oldOrientation = null;
@@ -61,6 +64,10 @@ public class Ship {
   public int[][] getShipBody() {
     return shipBody;
   }
+  
+  public int getHitcount() {
+   return hitcount; 
+  }
 
   public ShipType getShipType() {
     return type;
@@ -74,7 +81,7 @@ public class Ship {
   }
 
   public void restorePrevPos() {
-    if (this.oldy >= 0 || this.oldx >= 0) {
+    if (this.oldy >= 0 && this.oldx >= 0) {
       this.hx = this.oldx;
       this.hy = this.oldy;
     }
@@ -89,32 +96,44 @@ public class Ship {
     this.hy = hy;
     updateTailPos();
     generateBody();
-    shipEvent.onShipMove(this);
+    if (shipEvent != null)
+      shipEvent.onShipMove(this);
   }
 
   private void generateBody() {
 
+    //FIXME: NOT GOOD
     switch (orientation) {
-      case NORTH:
-      case SOUTH: {
-        int i = 0;
-        for (int y = (hy > ty) ? ty : hy; y < ((hy > ty) ? hy : ty); y++) {
+      case NORTH: {
+        int headY = hy;
+        for(int i=0; i < type.getLength(); i++) {
           shipBody[i][0] = hx;
-          shipBody[i][1] = y;
-          i++;
+          shipBody[i][1] = headY++;
         }
-      }
-        break;
-      case WEST:
-      case EAST: {
-        int i = 0;
-        for (int x = (hx > tx) ? tx : hx; x < ((hx > tx) ? hx : tx); x++) {
-          shipBody[i][0] = x;
+
+      } break;
+      case SOUTH: {
+        int headY = hy;
+        for(int i=0; i < type.getLength(); i++) {
+          shipBody[i][0] = hx;
+          shipBody[i][1] = headY--;
+        }
+      } break;
+      case WEST:{
+        int headX = hx;
+        for(int i=0; i < type.getLength(); i++) {
+          shipBody[i][0] = headX++;
           shipBody[i][1] = hy;
-          i++;
         }
-      }
-        break;
+      } break;
+
+      case EAST: {
+        int headX = hx;
+        for(int i=0; i < type.getLength(); i++) {
+          shipBody[i][0] = headX--;
+          shipBody[i][1] = hy;
+        }
+      } break;
       default:
         break;
     }
@@ -178,7 +197,8 @@ public class Ship {
     updateOrientation();
     updateTailPos();
     generateBody();
-    shipEvent.onShipRotate(this);
+    if (shipEvent != null)
+      shipEvent.onShipRotate(this);
   }
 
   public boolean isSunk() {
@@ -188,7 +208,7 @@ public class Ship {
   public void takeHit() {
     if (!isSunk()) {
       --hitcount;
-      if (isSunk()) {
+      if (shipEvent != null && isSunk()) {
         shipEvent.onShipSunk(this);
       }
 
@@ -205,6 +225,14 @@ public class Ship {
 
   public int getHeadY() {
     return hy;
+  }
+
+  public int getTailX() {
+    return tx;
+  }
+
+  public int getTailY() {
+    return ty;
   }
 
   @Override

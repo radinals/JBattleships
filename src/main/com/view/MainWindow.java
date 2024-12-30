@@ -1,11 +1,11 @@
-package com.view;
+package main.com.view;
 
 import java.awt.GridLayout;
 import java.awt.Point;
 
 import javax.swing.JFrame;
 
-import com.controller.GameCore;
+import main.com.controller.GameCore;
 
 public class MainWindow extends JFrame {
 

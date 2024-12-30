@@ -5,7 +5,12 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry excluding="resources/|resources/battleshipTiles/|resources/boatTiles/|resources/carrierTiles/|resources/destroyerTiles/|resources/submarineTiles/" kind="src" path="src"/>
+	<classpathentry excluding="resources/|resources/battleshipTiles/|resources/boatTiles/|resources/carrierTiles/|resources/destroyerTiles/|resources/submarineTiles/|com/main/java/|com/main/" kind="src" path="src"/>
 	<classpathentry excluding="battleshipTiles/|boatTiles/|carrierTiles/|destroyerTiles/|submarineTiles/" kind="src" path="src/resources"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

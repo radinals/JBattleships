@@ -1,8 +1,8 @@
-package com.main;
+package main.com;
 
-import com.controller.GameCore;
+import main.com.controller.GameCore;
 
-public class Main {
+public class Battleships {
   public static void main(String[] args) {
     GameCore core = new GameCore();
     core.run();

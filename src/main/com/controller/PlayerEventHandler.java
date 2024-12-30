@@ -1,9 +1,9 @@
-package com.controller;
+package main.com.controller;
 
 import java.awt.Point;
 
-import com.model.GameBoard;
-import com.model.Ship;
+import main.com.model.GameBoard;
+import main.com.model.Ship;
 
 public class PlayerEventHandler implements GameBoard.BoardEvents {
 
