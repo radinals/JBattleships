@@ -68,7 +68,7 @@ public class UserInputHandler implements KeyListener {
       } catch (Exception e) {
         gameCore.getMainWindow().recoverPlayerCursorPos();
         gameCore.getMainWindow().repaintPlayerBoardView();
-        e.printStackTrace();
+        //e.printStackTrace();
         return;
       }
 

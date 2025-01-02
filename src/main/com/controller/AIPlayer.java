@@ -72,7 +72,7 @@ public class AIPlayer implements GameBoard.BoardEvents {
         shot = getRandomGuess();
       }
     } while(!gameCore.getPlayerBoard().shotIsValid(shot.x, shot.y));
-
+    
     gameCore.getPlayerBoard().shootAt(shot.x, shot.y);
   }
 
