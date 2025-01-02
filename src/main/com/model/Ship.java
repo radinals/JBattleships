@@ -1,11 +1,13 @@
 package main.com.model;
 
+import java.awt.Point;
+
 public class Ship {
-  private int hx, hy, tx, ty, oldx, oldy;
-  private ShipType type;
+  private Point head, tail, old;
+  private ShipType shipType;
   private int hitcount;
   private ShipOrientation orientation, oldOrientation;
-  private int[][] shipBody;
+  private Point[] shipBody;
 
   public interface ShipEvents {
     public void onShipSunk(final Ship ship);
@@ -17,51 +19,38 @@ public class Ship {
 
   private ShipEvents shipEvent;
 
-  public Ship(int hx, int hy, ShipType type, ShipOrientation orientation) {
-    this(hx,hy,type,orientation,null);
+  public Ship(int x, int y, ShipType shipType, ShipOrientation orientation) {
+    this(x,y,shipType,orientation,null);
   }
 
-  public Ship(int hx, int hy, ShipType type, ShipOrientation orientation, ShipEvents shipEventHandler) {
-    this.hx = hx;
-    this.hy = hy;
+  public Ship(int x, int y, ShipType shipType, ShipOrientation orientation, ShipEvents shipEventHandler) {
+    this.head = new Point(x,y);
+    this.old = new Point();
+    this.tail = new Point();
+
     this.oldOrientation = null;
-    this.type = type;
-    this.oldx = -1;
-    this.oldy = -1;
-    this.hitcount = type.getLength();
+    this.shipType = shipType;
+    this.hitcount = shipType.getLength();
     this.orientation = orientation;
-    this.shipBody = new int[type.getLength()][2];
+    this.shipBody = new Point[shipType.getLength()];
     this.shipEvent = shipEventHandler;
+
     updateTailPos();
     generateBody();
   }
 
   public Ship(final Ship other) {
-    this.hx = getHeadX();
-    this.hy = getHeadY();
-    this.type = getShipType();
+    this.head = new Point(getHead());
+    this.shipType = getShipType();
     this.hitcount = 0;
-    this.shipBody = new int[type.getLength()][2];
+    this.shipBody = new Point[shipType.getLength()];
+
     updateTailPos();
+    generateBody();
 
-    for (int i = 0; i < other.getShipBody().length; i++) {
-      this.shipBody[i][0] = other.getShipBody()[i][0];
-      this.shipBody[i][1] = other.getShipBody()[i][1];
-    }
   }
 
-  public int getShipBodyIndex(int x, int y) {
-    for (int i = 0; i < shipBody.length; i++) {
-      int px = shipBody[i][0];
-      int py = shipBody[i][1];
-      if (px == x && py == y) {
-        return i;
-      }
-    }
-    return -1;
-  }
-
-  public int[][] getShipBody() {
+  public Point[] getShipBody() {
     return shipBody;
   }
   
@@ -70,7 +59,29 @@ public class Ship {
   }
 
   public ShipType getShipType() {
-    return type;
+    return shipType;
+  }
+
+  public ShipOrientation getOrientation() {
+    return orientation;
+  }
+
+  public Point getHead() {
+    return head;
+  }
+
+  public Point getTail() {
+    return tail;
+  }
+
+  public int getShipBodyIndex(int x, int y) {
+    for (int i = 0; i < shipBody.length; i++) {
+      Point p = shipBody[i];
+      if (p.x == x && p.y == y) {
+        return i;
+      }
+    }
+    return -1;
   }
 
   public void restorePrevOrientation() {
@@ -81,19 +92,18 @@ public class Ship {
   }
 
   public void restorePrevPos() {
-    if (this.oldy >= 0 && this.oldx >= 0) {
-      this.hx = this.oldx;
-      this.hy = this.oldy;
+    if (this.old.y >= 0 && this.old.x >= 0) {
+      this.head.x = this.old.x;
+      this.head.y = this.old.y;
     }
     updateTailPos();
     generateBody();
   }
 
-  public void moveHead(int hx, int hy) {
-    this.oldx = this.hx;
-    this.oldy = this.hy;
-    this.hx = hx;
-    this.hy = hy;
+  public void moveHead(int x, int y) {
+    this.old = new Point(head);
+    this.head.x = x;
+    this.head.y = y;
     updateTailPos();
     generateBody();
     if (shipEvent != null)
@@ -105,33 +115,29 @@ public class Ship {
     //FIXME: NOT GOOD
     switch (orientation) {
       case NORTH: {
-        int headY = hy;
-        for(int i=0; i < type.getLength(); i++) {
-          shipBody[i][0] = hx;
-          shipBody[i][1] = headY++;
+        int headY = head.y;
+        for(int i=0; i < shipType.getLength(); i++) {
+          shipBody[i] = new Point(head.x, headY++);
         }
 
       } break;
       case SOUTH: {
-        int headY = hy;
-        for(int i=0; i < type.getLength(); i++) {
-          shipBody[i][0] = hx;
-          shipBody[i][1] = headY--;
+        int headY = head.y;
+        for(int i=0; i < shipType.getLength(); i++) {
+          shipBody[i] = new Point(head.x, headY--);
         }
       } break;
       case WEST:{
-        int headX = hx;
-        for(int i=0; i < type.getLength(); i++) {
-          shipBody[i][0] = headX++;
-          shipBody[i][1] = hy;
+        int headX = head.x;
+        for(int i=0; i < shipType.getLength(); i++) {
+          shipBody[i] = new Point(headX++, head.y);
         }
       } break;
 
       case EAST: {
-        int headX = hx;
-        for(int i=0; i < type.getLength(); i++) {
-          shipBody[i][0] = headX--;
-          shipBody[i][1] = hy;
+        int headX = head.x;
+        for(int i=0; i < shipType.getLength(); i++) {
+          shipBody[i] = new Point(headX--, head.y);
         }
       } break;
       default:
@@ -142,20 +148,20 @@ public class Ship {
   private void updateTailPos() {
     switch (orientation) {
       case EAST:
-        tx = hx + type.getLength();
-        ty = hy;
+        tail.x = head.x + shipType.getLength();
+        tail.y = head.y;
         break;
       case NORTH:
-        tx = hx;
-        ty = hy + type.getLength();
+        tail.x = head.x;
+        tail.y = head.y + shipType.getLength();
         break;
       case SOUTH:
-        tx = hx;
-        ty = hy - type.getLength();
+        tail.x = head.x;
+        tail.y = head.y - shipType.getLength();
         break;
       case WEST:
-        tx = hx - type.getLength();
-        ty = hy;
+        tail.x = head.x - shipType.getLength();
+        tail.y = head.y;
         break;
       default:
         break;
@@ -186,8 +192,8 @@ public class Ship {
   }
 
   public boolean pointIntersectBody(int x, int y) {
-    for (int[] point : shipBody) {
-      if (point[0] == x && point[1] == y)
+    for (Point p: shipBody) {
+      if (p.x == x && p.y == y)
         return true;
     }
     return false;
@@ -215,36 +221,16 @@ public class Ship {
     }
   }
 
-  public ShipOrientation getOrientation() {
-    return orientation;
-  }
-
-  public int getHeadX() {
-    return hx;
-  }
-
-  public int getHeadY() {
-    return hy;
-  }
-
-  public int getTailX() {
-    return tx;
-  }
-
-  public int getTailY() {
-    return ty;
-  }
-
   @Override
   public String toString() {
 
     String bodystr = "BODY: ";
 
-    for (int[] point : shipBody) {
-      bodystr += String.format("(%d,%d)/", point[0], point[1]);
+    for (Point p : shipBody) {
+      bodystr += String.format("(%d,%d)/", p.x, p.y);
     }
 
-    return String.format("%s H:(%d,%d) T:(%d,%d) (c:%s) %s", type, hx, hy, tx,
-        ty, orientation, bodystr);
+    return String.format("%s H:(%d,%d) T:(%d,%d) (c:%s) %s", shipType, head.x, head.y, tail.x,
+        tail.y, orientation, bodystr);
   }
 }

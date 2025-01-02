@@ -14,28 +14,33 @@ public class GameBoardCell {
     this.ship = other.ship;
   }
 
-  public void removeShip() {
+  public GameBoardCell removeShip() {
     ship = null;
+    return this;
   }
 
   public boolean containsAShip() {
     return ship != null;
   }
 
-  public void setShip(ShipType ship) {
+  public GameBoardCell setShip(ShipType ship) {
     this.ship = ship;
+    return this;
   }
 
-  public void setMarkHit() {
+  public GameBoardCell setMarkHit() {
     this.mark = GameBoardMark.HIT;
+    return this;
   }
 
-  public void setMarkMiss() {
+  public GameBoardCell setMarkMiss() {
     this.mark = GameBoardMark.MISS;
+    return this;
   }
 
-  public void setMarkNone() {
+  public GameBoardCell setMarkNone() {
     this.mark = GameBoardMark.NONE;
+    return this;
   }
 
   public boolean isMarkHit() {

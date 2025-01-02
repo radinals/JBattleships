@@ -158,6 +158,11 @@ public class BoardView extends JPanel {
   public int getCellSize() {
     return (int) (baseCellSize * cellScalingFactor);
   }
+  
+  public void resetCursorPos() {
+    this.cursorPos.x = 0;
+    this.cursorPos.y = 0;
+  }
 
   public Point getCursorPos() {
     return cursorPos;

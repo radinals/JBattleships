@@ -2,6 +2,8 @@ package test.com.model;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.awt.Point;
+
 import org.junit.jupiter.api.Test;
 
 import main.com.model.Ship;
@@ -14,11 +16,8 @@ class ShipTest {
   void shipInittest() {
     Ship ship = new Ship(0,0,ShipType.CARRIER,ShipOrientation.NORTH);
     
-    for (int[] point : ship.getShipBody()) {
-      int x = point[0];
-      int y = point[1];
-      
-      if (x != 0 || y < 0 || y > ShipType.CARRIER.getLength())
+    for (Point p: ship.getShipBody()) {
+      if (p.x != 0 || p.y < 0 || p.y > ShipType.CARRIER.getLength())
         fail("incorrect ship body coordinate");
     }
     
@@ -26,18 +25,21 @@ class ShipTest {
   
   void testShipHeadTailPos(Ship ship, int testHeadx, int testHeady,
       int testTailx, int testTaily ) {
+    
+    Point head = ship.getHead();
+    Point tail = ship.getTail();
 
-    if (ship.getHeadX() != testHeadx) 
-      fail("Incorrect Head X Point Values: " + ship.getHeadX());
+    if (head.x != testHeadx) 
+      fail("Incorrect Head X Point Values: " + head.x);
 
-    if (ship.getHeadY() != testHeady) 
-      fail("Incorrect Head Y Point Values: " + ship.getHeadY());
+    if (head.y != testHeady) 
+      fail("Incorrect Head Y Point Values: " + head.y);
 
-    if (ship.getTailX() != testTailx) 
-      fail("Incorrect Tail X Point Values: " + ship.getTailX());
+    if (tail.x != testTailx) 
+      fail("Incorrect Tail X Point Values: " + tail.x);
 
-    if (ship.getTailY() != testTaily) 
-      fail("Incorrect Tail Y Point Values: " + ship.getTailY());
+    if (tail.y != testTaily) 
+      fail("Incorrect Tail Y Point Values: " + tail.y);
 
   }
   

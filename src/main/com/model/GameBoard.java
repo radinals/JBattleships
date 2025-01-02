@@ -1,9 +1,8 @@
 package main.com.model;
 
+import java.awt.Point;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.swing.plaf.synth.SynthOptionPaneUI;
 
 import main.com.model.Ship.ShipEvents;
 import main.com.util.CopyUtil;
@@ -58,12 +57,12 @@ public class GameBoard implements ShipEvents {
   }
 
   private boolean placementValid(Ship ship) {
-    for (int[] point : ship.getShipBody()) {
-      if (!pointInBounds(point[0], point[1]))
+    for (Point p: ship.getShipBody()) {
+      if (!pointInBounds(p.x, p.y))
         return false;
       
       for( Map.Entry<ShipType, Ship> entry : ships.entrySet()) {
-        if (entry.getValue().pointIntersectBody(point[0], point[1]))
+        if (entry.getValue().pointIntersectBody(p.x, p.y))
           return false;
       }
     }
@@ -80,9 +79,8 @@ public class GameBoard implements ShipEvents {
     CopyUtil.deepCopyMatrix(this.board, tmpBoard, GameBoardCell::new);
 
     try {
-      for (int[] point : ship.getShipBody()) {
-        int px = point[0], py = point[1];
-        tmpBoard[py][px].setShip(ship.getShipType());
+      for (Point p: ship.getShipBody()) {
+        tmpBoard[p.y][p.x].setShip(ship.getShipType());
       }
       
       ships.put(ship.getShipType(), ship);
@@ -111,11 +109,9 @@ public class GameBoard implements ShipEvents {
     GameBoardCell[][] tmpBoard = new GameBoardCell[this.boardSize][this.boardSize];
     initBoard(tmpBoard, boardSize);
 
-    for (ShipType k : ships.keySet()) {
-      Ship ship = ships.get(k);
-      for (int[] point : ship.getShipBody()) {
-        int px = point[0], py = point[1];
-        tmpBoard[py][px].setShip(ship.getShipType());
+    for(Map.Entry<ShipType, Ship> e : ships.entrySet()) {
+      for (Point p: e.getValue().getShipBody()) {
+        tmpBoard[p.y][p.x].setShip(e.getValue().getShipType());
       }
     }
 
@@ -131,12 +127,7 @@ public class GameBoard implements ShipEvents {
 
       if (!placementValid(ship)) {
         ship.restorePrevOrientation();
-        if (!placementValid(ship)) {
-          System.err.println("Failed to restore ship after rotate failure.");
-          System.exit(-1);
-        }
         placeShip(ship);
-
         throw new Exception("Invalid Rotation");
       }
 
@@ -175,8 +166,11 @@ public class GameBoard implements ShipEvents {
       return false;
 
     try {
+
       GameBoardCell cell = cellAt(x, y);
-      if (!cell.isMarkNone()) throw new Exception("Invalid Cell to Shoot at");
+      if (!cell.isMarkNone())
+        throw new Exception("Invalid Cell to Shoot at");
+
     } catch (IndexOutOfBoundsException e) {
       e.printStackTrace();
       return false;
@@ -284,18 +278,16 @@ public class GameBoard implements ShipEvents {
     sunkShipsCounter = 0;
     for (GameBoardCell[] line : board) {
       for (GameBoardCell cell : line) {
-        cell.removeShip();
-        cell.setMarkNone();
+        cell.removeShip().setMarkNone();
       }
     }
   }
 
   public void removeShip(Ship ship) {
     ships.remove(ship.getShipType());
-    for (int[] point : ship.getShipBody()) {
-      GameBoardCell cell = cellAt(point[0], point[1]);
-      cell.setMarkNone();
-      cell.removeShip();
+    for (Point p: ship.getShipBody()) {
+      GameBoardCell cell = cellAt(p.x,p.y);
+        cell.removeShip().setMarkNone();
     }
   }
 

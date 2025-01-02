@@ -164,6 +164,7 @@ public class GameCore {
       } else {
         playerBoard.moveShip(playerCurrentHeldShip, cursorPos.x, cursorPos.y);
       }
+
     } catch (Exception e) {
       throw e;
     }
@@ -171,6 +172,10 @@ public class GameCore {
   }
 
   public void setToBattlePhase() {
+    this.mainWindow.resetOpponentCursorPos();
+    this.mainWindow.showOpponentCursor();
+    this.mainWindow.hidePlayerCursor();
+
     this.gamePhase = GamePhase.BATTLE;
     this.gameTurn = GameTurn.Player;
   }
@@ -208,25 +213,25 @@ public class GameCore {
   }
 
   public void setToPlacementPhase() {
-
-    if (!playerShipPlacementQueue.isEmpty())
-      playerShipPlacementQueue.clear();
+    this.mainWindow.resetPlayerCursorPos();
+    this.mainWindow.showPlayerCursor();
+    this.mainWindow.hideOpponentCursor();
 
     if (playerCurrentHeldShip != null)
       playerCurrentHeldShip = null;
 
-    this.gamePhase = GamePhase.PLACEMENT;
+    if (!playerShipPlacementQueue.isEmpty())
+      playerShipPlacementQueue.clear();
 
     fillShipPlacementQueue();
     playerCurrentHeldShip = playerShipPlacementQueue.poll();
+
+    this.gamePhase = GamePhase.PLACEMENT;
 
     playerBoard.reset();
     opponentBoard.reset();
 
     aiPlayer.placeShips();
-
-    mainWindow.repaintopponentBoardView();
-    mainWindow.repaintPlayerBoardView();
   }
 
   public void ShootAtOpponent() throws Exception {
