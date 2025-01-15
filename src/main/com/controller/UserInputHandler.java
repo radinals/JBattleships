@@ -117,6 +117,11 @@ public class UserInputHandler implements KeyListener {
 
   @Override
   public void keyReleased(KeyEvent e) {
+    switch(e.getKeyCode()) {
+      case KeyEvent.VK_BACK_SPACE:
+        gameCore.resetGame();
+        break;
+    }
   }
 
   @Override
