@@ -64,16 +64,14 @@ public class AIPlayer implements GameBoard.BoardEvents {
 
   public void shootAtBoard() {
     Point shot = null;
-    // make sure the shot is valid
     do {
       if (!shotGuesses.isEmpty()) {
         shot = shotGuesses.poll();
       } else {
         shot = getRandomGuess();
       }
-    } while(!gameCore.getPlayerBoard().shotIsValid(shot.x, shot.y));
-    
-    gameCore.getPlayerBoard().shootAt(shot.x, shot.y);
+    // make sure the shot is valid
+    } while(!gameCore.getPlayerBoard().shootAt(shot.x, shot.y));
   }
 
   @Override
