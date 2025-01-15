@@ -172,13 +172,11 @@ public class GameBoard implements ShipEvents {
         throw new Exception("Invalid Cell to Shoot at");
 
     } catch (IndexOutOfBoundsException e) {
-      e.printStackTrace();
       return false;
     } catch (NullPointerException e) {
       e.printStackTrace();
       System.exit(-1);
     } catch (Exception e) {
-      e.printStackTrace();
       return false;
     }
 
