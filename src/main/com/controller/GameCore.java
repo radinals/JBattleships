@@ -57,7 +57,15 @@ public class GameCore {
       setToPlacementPhase();
     });
   }
+  
+  public void increaseAILevel() {
+    aiPlayer.setAiLevel(+1);
+  }
 
+  public void decreseAILevel() {
+    aiPlayer.setAiLevel(-1);
+  }
+  
   public boolean isGameOver() {
     return gamePhase == GamePhase.GAMEOVER;
   }

@@ -118,6 +118,12 @@ public class UserInputHandler implements KeyListener {
   @Override
   public void keyReleased(KeyEvent e) {
     switch(e.getKeyCode()) {
+      case KeyEvent.VK_EQUALS:
+        gameCore.increaseAILevel();
+        break;
+      case KeyEvent.VK_MINUS:
+        gameCore.decreseAILevel();
+        break;
       case KeyEvent.VK_BACK_SPACE:
         gameCore.resetGame();
         break;
