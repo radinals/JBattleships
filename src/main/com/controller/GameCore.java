@@ -60,16 +60,13 @@ public class GameCore {
   private void setAIDifficultyLevel(AIDifficultyLevel level) {
     switch (level) {
       case EASY:
-        this.aiPlayer.getShotGenerator().setAICorrectGuessBias(1);
-        this.aiPlayer.getShotGenerator().setAIIncorrectGuessBias(2);
+        this.aiPlayer.getShotGenerator().setAICorrectGuessBias(0.2);
         break;
       case MEDIUM:
-        this.aiPlayer.getShotGenerator().setAICorrectGuessBias(1);
-        this.aiPlayer.getShotGenerator().setAIIncorrectGuessBias(1);
+        this.aiPlayer.getShotGenerator().setAICorrectGuessBias(0.5);
         break;
       case HARD:
-        this.aiPlayer.getShotGenerator().setAICorrectGuessBias(2);
-        this.aiPlayer.getShotGenerator().setAIIncorrectGuessBias(1);
+        this.aiPlayer.getShotGenerator().setAICorrectGuessBias(1.0);
         break;
     }
   }
