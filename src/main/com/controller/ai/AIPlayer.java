@@ -2,17 +2,16 @@ package main.com.controller.ai;
 
 import java.awt.Point;
 
+import main.com.controller.GameCore;
 import main.com.model.GameBoard;
 import main.com.model.Ship;
-import main.com.util.BoardRandomizer;
-import main.com.util.GameShotGuessGenerator;
 
 public class AIPlayer implements GameBoard.BoardEvents {
 
   private GameCore gameCore;
   private GameShotGuessGenerator shotGenerator;
   private BoardRandomizer boardRandomizer;
-  
+
   public AIPlayer(GameCore gameCore) {
     this.gameCore = gameCore;
 
@@ -27,13 +26,13 @@ public class AIPlayer implements GameBoard.BoardEvents {
     Point shot = null;
     do {
       shot = this.shotGenerator.getGuess();
-    } while(!gameCore.getPlayerBoard().shootAt(shot.x, shot.y));
+    } while (!gameCore.getPlayerBoard().shootAt(shot.x, shot.y));
   }
-  
+
   public GameShotGuessGenerator getShotGenerator() {
     return shotGenerator;
   }
-  
+
   public void placeShips() {
     this.boardRandomizer.randomFillBoard(gameCore.getOpponentBoard());
   }

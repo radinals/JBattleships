@@ -20,11 +20,12 @@ public class Ship {
   private ShipEvents shipEvent;
 
   public Ship(int x, int y, ShipType shipType, ShipOrientation orientation) {
-    this(x,y,shipType,orientation,null);
+    this(x, y, shipType, orientation, null);
   }
 
-  public Ship(int x, int y, ShipType shipType, ShipOrientation orientation, ShipEvents shipEventHandler) {
-    this.head = new Point(x,y);
+  public Ship(int x, int y, ShipType shipType, ShipOrientation orientation,
+      ShipEvents shipEventHandler) {
+    this.head = new Point(x, y);
     this.old = new Point();
     this.tail = new Point();
 
@@ -53,9 +54,9 @@ public class Ship {
   public Point[] getShipBody() {
     return shipBody;
   }
-  
+
   public int getHitcount() {
-   return hitcount; 
+    return hitcount;
   }
 
   public ShipType getShipType() {
@@ -112,34 +113,38 @@ public class Ship {
 
   private void generateBody() {
 
-    //FIXME: NOT GOOD
+    // FIXME: NOT GOOD
     switch (orientation) {
       case NORTH: {
         int headY = head.y;
-        for(int i=0; i < shipType.getLength(); i++) {
+        for (int i = 0; i < shipType.getLength(); i++) {
           shipBody[i] = new Point(head.x, headY++);
         }
 
-      } break;
+      }
+        break;
       case SOUTH: {
         int headY = head.y;
-        for(int i=0; i < shipType.getLength(); i++) {
+        for (int i = 0; i < shipType.getLength(); i++) {
           shipBody[i] = new Point(head.x, headY--);
         }
-      } break;
-      case WEST:{
+      }
+        break;
+      case WEST: {
         int headX = head.x;
-        for(int i=0; i < shipType.getLength(); i++) {
+        for (int i = 0; i < shipType.getLength(); i++) {
           shipBody[i] = new Point(headX++, head.y);
         }
-      } break;
+      }
+        break;
 
       case EAST: {
         int headX = head.x;
-        for(int i=0; i < shipType.getLength(); i++) {
+        for (int i = 0; i < shipType.getLength(); i++) {
           shipBody[i] = new Point(headX--, head.y);
         }
-      } break;
+      }
+        break;
       default:
         break;
     }
@@ -192,7 +197,7 @@ public class Ship {
   }
 
   public boolean pointIntersectBody(int x, int y) {
-    for (Point p: shipBody) {
+    for (Point p : shipBody) {
       if (p.x == x && p.y == y)
         return true;
     }
@@ -230,7 +235,7 @@ public class Ship {
       bodystr += String.format("(%d,%d)/", p.x, p.y);
     }
 
-    return String.format("%s H:(%d,%d) T:(%d,%d) (c:%s) %s", shipType, head.x, head.y, tail.x,
-        tail.y, orientation, bodystr);
+    return String.format("%s H:(%d,%d) T:(%d,%d) (c:%s) %s", shipType, head.x,
+        head.y, tail.x, tail.y, orientation, bodystr);
   }
 }

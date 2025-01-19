@@ -70,7 +70,7 @@ public class UserInputHandler implements KeyListener {
       } catch (Exception e) {
         gameCore.getMainWindow().recoverPlayerCursorPos();
         gameCore.getMainWindow().repaintPlayerBoardView();
-        //e.printStackTrace();
+        // e.printStackTrace();
         return;
       }
 
@@ -119,7 +119,7 @@ public class UserInputHandler implements KeyListener {
 
   @Override
   public void keyReleased(KeyEvent e) {
-    switch(e.getKeyCode()) {
+    switch (e.getKeyCode()) {
       case KeyEvent.VK_BACK_SPACE:
         gameCore.resetGame();
         break;

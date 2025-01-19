@@ -1,4 +1,4 @@
-package main.com.util;
+package main.com.controller.ai;
 
 import java.awt.Point;
 import java.util.ArrayDeque;

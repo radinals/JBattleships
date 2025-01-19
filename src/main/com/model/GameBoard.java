@@ -56,22 +56,22 @@ public class GameBoard implements ShipEvents {
   }
 
   private boolean placementValid(Ship ship) {
-    for (Point p: ship.getShipBody()) {
+    for (Point p : ship.getShipBody()) {
       if (!pointInBounds(p.x, p.y))
         return false;
-      
-      for( Map.Entry<ShipType, Ship> entry : ships.entrySet()) {
+
+      for (Map.Entry<ShipType, Ship> entry : ships.entrySet()) {
         if (entry.getValue().pointIntersectBody(p.x, p.y))
           return false;
       }
     }
     return true;
   }
-  
+
   private GameBoardCell[][] makeGameBoardCopy() {
     GameBoardCell[][] copy = new GameBoardCell[this.boardSize][this.boardSize];
-    for(int y = 0; y < this.boardSize; y++) {
-      for(int x = 0; x < this.boardSize; x++) {
+    for (int y = 0; y < this.boardSize; y++) {
+      for (int x = 0; x < this.boardSize; x++) {
         copy[y][x] = new GameBoardCell(this.board[y][x]);
       }
     }
@@ -86,10 +86,10 @@ public class GameBoard implements ShipEvents {
     GameBoardCell[][] tmpBoard = makeGameBoardCopy();
 
     try {
-      for (Point p: ship.getShipBody()) {
+      for (Point p : ship.getShipBody()) {
         tmpBoard[p.y][p.x].setShip(ship.getShipType());
       }
-      
+
       ships.put(ship.getShipType(), ship);
 
       this.board = tmpBoard;
@@ -101,7 +101,6 @@ public class GameBoard implements ShipEvents {
       e.printStackTrace();
       return false;
     }
-
 
     return true;
   }
@@ -117,8 +116,8 @@ public class GameBoard implements ShipEvents {
     GameBoardCell[][] tmpBoard = new GameBoardCell[this.boardSize][this.boardSize];
     initBoard(tmpBoard, boardSize);
 
-    for(Map.Entry<ShipType, Ship> e : ships.entrySet()) {
-      for (Point p: e.getValue().getShipBody()) {
+    for (Map.Entry<ShipType, Ship> e : ships.entrySet()) {
+      for (Point p : e.getValue().getShipBody()) {
         tmpBoard[p.y][p.x].setShip(e.getValue().getShipType());
       }
     }
@@ -154,12 +153,12 @@ public class GameBoard implements ShipEvents {
     return ships.getOrDefault(type, null);
   }
 
-  public GameBoardCell cellAt(int line, int column)
+  public GameBoardCell cellAt(int x, int y)
       throws IndexOutOfBoundsException, NullPointerException {
-    GameBoardCell cell = board[column][line];
+    GameBoardCell cell = board[y][x];
     if (cell == null)
       throw new NullPointerException(
-          String.format("cell at board[%d][%d] is null", column, line));
+          String.format("cell at board[%d][%d] is null", y, x));
     return cell;
   }
 
@@ -191,7 +190,7 @@ public class GameBoard implements ShipEvents {
   }
 
   public boolean shootAt(int x, int y) {
-    if (!shotIsValid(x, y))  {
+    if (!shotIsValid(x, y)) {
       System.out.println("I1");
       return false;
     }
@@ -232,8 +231,8 @@ public class GameBoard implements ShipEvents {
   public String toString() {
     String boardStr = "";
 
-    for (GameBoardCell[] line : board) {
-      for (GameBoardCell cell : line) {
+    for (GameBoardCell[] row : board) {
+      for (GameBoardCell cell : row) {
 
         boardStr += "[";
         if (cell.containsAShip() && cell.isMarkNone()) {
@@ -281,8 +280,8 @@ public class GameBoard implements ShipEvents {
   public void reset() {
     ships.clear();
     sunkShipsCounter = 0;
-    for (GameBoardCell[] line : board) {
-      for (GameBoardCell cell : line) {
+    for (GameBoardCell[] row : board) {
+      for (GameBoardCell cell : row) {
         cell.removeShip().setMarkNone();
       }
     }
@@ -290,9 +289,9 @@ public class GameBoard implements ShipEvents {
 
   public void removeShip(Ship ship) {
     ships.remove(ship.getShipType());
-    for (Point p: ship.getShipBody()) {
-      GameBoardCell cell = cellAt(p.x,p.y);
-        cell.removeShip().setMarkNone();
+    for (Point p : ship.getShipBody()) {
+      GameBoardCell cell = cellAt(p.x, p.y);
+      cell.removeShip().setMarkNone();
     }
   }
 

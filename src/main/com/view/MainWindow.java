@@ -32,13 +32,13 @@ public class MainWindow extends JFrame {
     revalidate();
     repaint();
   }
-  
+
   public void resetPlayerCursorPos() {
-   playerBoardView.resetCursorPos(); 
+    playerBoardView.resetCursorPos();
   }
 
   public void resetOpponentCursorPos() {
-   opponentBoardView.resetCursorPos(); 
+    opponentBoardView.resetCursorPos();
   }
 
   public void recoverPlayerCursorPos() {

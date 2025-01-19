@@ -5,10 +5,12 @@ import java.util.ArrayDeque;
 
 import javax.swing.SwingUtilities;
 
+import main.com.controller.ai.AIPlayer;
 import main.com.model.GameBoard;
 import main.com.model.ShipOrientation;
 import main.com.model.ShipType;
 import main.com.view.MainWindow;
+import main.com.view.UserInputHandler;
 
 public class GameCore {
 
@@ -32,9 +34,11 @@ public class GameCore {
   private GamePhase gamePhase;
   private GameTurn gameTurn;
   private GameWinner gameWinner;
-  
-  private enum AIDifficultyLevel { EASY, MEDIUM, HARD }
-  
+
+  private enum AIDifficultyLevel {
+    EASY, MEDIUM, HARD
+  }
+
   private ArrayDeque<ShipType> playerShipPlacementQueue;
   private ShipType playerCurrentHeldShip;
 
@@ -52,7 +56,7 @@ public class GameCore {
     playerCurrentHeldShip = null;
 
   }
-  
+
   private void setAIDifficultyLevel(AIDifficultyLevel level) {
     switch (level) {
       case EASY:
@@ -79,7 +83,7 @@ public class GameCore {
       setToPlacementPhase();
     });
   }
-  
+
   public boolean isGameOver() {
     return gamePhase == GamePhase.GAMEOVER;
   }
