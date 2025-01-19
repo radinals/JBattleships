@@ -32,20 +32,42 @@ public class GameCore {
   private GamePhase gamePhase;
   private GameTurn gameTurn;
   private GameWinner gameWinner;
-
+  
+  private enum AIDifficultyLevel { EASY, MEDIUM, HARD }
+  
   private ArrayDeque<ShipType> playerShipPlacementQueue;
   private ShipType playerCurrentHeldShip;
 
   public GameCore() {
 
+    this.playerBoard = new GameBoard(10, new PlayerEventHandler(this));
+
     this.aiPlayer = new AIPlayer(this);
 
-    this.playerBoard = new GameBoard(10, new PlayerEventHandler(this));
     this.opponentBoard = new GameBoard(10, aiPlayer);
+
+    this.setAIDifficultyLevel(AIDifficultyLevel.HARD);
 
     playerShipPlacementQueue = new ArrayDeque<ShipType>();
     playerCurrentHeldShip = null;
 
+  }
+  
+  private void setAIDifficultyLevel(AIDifficultyLevel level) {
+    switch (level) {
+      case EASY:
+        this.aiPlayer.getShotGenerator().setAICorrectGuessBias(1);
+        this.aiPlayer.getShotGenerator().setAIIncorrectGuessBias(2);
+        break;
+      case MEDIUM:
+        this.aiPlayer.getShotGenerator().setAICorrectGuessBias(1);
+        this.aiPlayer.getShotGenerator().setAIIncorrectGuessBias(1);
+        break;
+      case HARD:
+        this.aiPlayer.getShotGenerator().setAICorrectGuessBias(2);
+        this.aiPlayer.getShotGenerator().setAIIncorrectGuessBias(1);
+        break;
+    }
   }
 
   public void run() {
@@ -56,14 +78,6 @@ public class GameCore {
       mainWindow.showPlayerCursor();
       setToPlacementPhase();
     });
-  }
-  
-  public void increaseAILevel() {
-    aiPlayer.setAiLevel(+1);
-  }
-
-  public void decreseAILevel() {
-    aiPlayer.setAiLevel(-1);
   }
   
   public boolean isGameOver() {
@@ -211,13 +225,10 @@ public class GameCore {
     return this.gameTurn == GameTurn.Opponent;
   }
 
-  public void generateAIGuess(Point lastSuccessfulShot) {
-    aiPlayer.generateGuess(lastSuccessfulShot);
-  }
-
   public void doOpponentMove() {
     if (isOpponentsTurn())
       aiPlayer.shootAtBoard();
+    mainWindow.repaintPlayerBoardView();
   }
 
   public void setToPlacementPhase() {

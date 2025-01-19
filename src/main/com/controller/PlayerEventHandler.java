@@ -1,7 +1,5 @@
 package main.com.controller;
 
-import java.awt.Point;
-
 import main.com.model.GameBoard;
 import main.com.model.Ship;
 
@@ -25,9 +23,10 @@ public class PlayerEventHandler implements GameBoard.BoardEvents {
     }
   }
 
+  // TODO Animations
+
   @Override
   public void onShotHit(Ship ship, int x, int y) {
-    gameCore.generateAIGuess(new Point(x, y));
     gameCore.getMainWindow().repaintPlayerBoardView();
   }
 
