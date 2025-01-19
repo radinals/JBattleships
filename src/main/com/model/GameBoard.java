@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import main.com.model.Ship.ShipEvents;
-import main.com.util.CopyUtil;
 
 public class GameBoard implements ShipEvents {
 
@@ -68,15 +67,23 @@ public class GameBoard implements ShipEvents {
     }
     return true;
   }
+  
+  private GameBoardCell[][] makeGameBoardCopy() {
+    GameBoardCell[][] copy = new GameBoardCell[this.boardSize][this.boardSize];
+    for(int y = 0; y < this.boardSize; y++) {
+      for(int x = 0; x < this.boardSize; x++) {
+        copy[y][x] = new GameBoardCell(this.board[y][x]);
+      }
+    }
+    return copy;
+  }
 
   private boolean placeShip(Ship ship) {
 
     if (!placementValid(ship))
       return false;
 
-    GameBoardCell[][] tmpBoard = new GameBoardCell[this.boardSize][this.boardSize];
-
-    CopyUtil.deepCopyMatrix(this.board, tmpBoard, GameBoardCell::new);
+    GameBoardCell[][] tmpBoard = makeGameBoardCopy();
 
     try {
       for (Point p: ship.getShipBody()) {
@@ -85,7 +92,7 @@ public class GameBoard implements ShipEvents {
       
       ships.put(ship.getShipType(), ship);
 
-      CopyUtil.deepCopyMatrix(tmpBoard, this.board, GameBoardCell::new);
+      this.board = tmpBoard;
 
       if (boardEvents != null)
         boardEvents.onShipAdded(ship);
@@ -94,6 +101,7 @@ public class GameBoard implements ShipEvents {
       e.printStackTrace();
       return false;
     }
+
 
     return true;
   }
@@ -115,7 +123,7 @@ public class GameBoard implements ShipEvents {
       }
     }
 
-    CopyUtil.deepCopyMatrix(tmpBoard, this.board, GameBoardCell::new);
+    this.board = tmpBoard;
   }
 
   public void rotateShip(ShipType type) throws Exception {
@@ -168,11 +176,10 @@ public class GameBoard implements ShipEvents {
     try {
 
       GameBoardCell cell = cellAt(x, y);
-      if (!cell.isMarkNone())
-        throw new Exception("Invalid Cell to Shoot at");
 
-    } catch (IndexOutOfBoundsException e) {
-      return false;
+      if (!cell.isMarkNone())
+        return false;
+
     } catch (NullPointerException e) {
       e.printStackTrace();
       System.exit(-1);
