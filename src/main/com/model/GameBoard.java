@@ -162,9 +162,13 @@ public class GameBoard implements ShipEvents {
     return cell;
   }
 
-  public boolean hasShipAtCell(int line, int column)
+//  public boolean shipAtCellIsSunk(int x, int y) {
+//    return (cellAt(x, y).containsAShip()) && getShip(cellAt(x, y).ship).isSunk();
+//  }
+
+  public boolean hasShipAtCell(int x, int y)
       throws IndexOutOfBoundsException, NullPointerException {
-    GameBoardCell cell = cellAt(line, column);
+    GameBoardCell cell = cellAt(x, y);
     return cell.containsAShip();
   }
 
@@ -187,6 +191,10 @@ public class GameBoard implements ShipEvents {
     }
 
     return true;
+  }
+
+  public boolean checkIfShotAtCellIsAHit(int x, int y) {
+    return (shotIsValid(x, y) && cellAt(x, y).containsAShip());
   }
 
   public boolean shootAt(int x, int y) {
