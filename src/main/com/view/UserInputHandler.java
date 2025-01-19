@@ -1,7 +1,9 @@
-package main.com.controller;
+package main.com.view;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+
+import main.com.controller.GameCore;
 
 public class UserInputHandler implements KeyListener {
 

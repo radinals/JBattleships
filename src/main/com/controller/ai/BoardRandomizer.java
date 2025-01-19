@@ -1,4 +1,4 @@
-package main.com.util;
+package main.com.controller.ai;
 
 import main.com.model.GameBoard;
 import main.com.model.ShipOrientation;

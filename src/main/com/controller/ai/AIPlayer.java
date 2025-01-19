@@ -1,4 +1,4 @@
-package main.com.controller;
+package main.com.controller.ai;
 
 import java.awt.Point;
 

@@ -1,4 +1,4 @@
-package main.com.util;
+package main.com.util.rng;
 
 import java.util.random.RandomGenerator;
 
